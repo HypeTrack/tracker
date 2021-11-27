@@ -42,5 +42,6 @@ setInterval(async () => {
     await streamCheck('wirecast_high')
     
     // Increment cycle
+    debug('Cycle %d ended.', cycle)
     cycle++
 }, timeoutTime)
