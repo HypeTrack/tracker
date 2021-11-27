@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  hypetrack:
+    build: .
+    context: Dockerfile.development
+    volumes:
+      - tracker.json:/usr/src/hypetrack/
+    env_file:
+      - .env

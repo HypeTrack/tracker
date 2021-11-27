@@ -1,0 +1,16 @@
+FROM node:current-alpine
+
+WORKDIR /usr/src/hypetrack
+
+COPY package.json /usr/src/hypetrack/
+
+ENV NODE_ENV=development
+ENV DEBUG=*,-follow-redirects,-telegraf:client
+
+RUN ["yarn"]
+
+COPY . /usr/src/hypetrack/
+
+RUN ["yarn", "build"]
+
+CMD ["yarn", "start"]
