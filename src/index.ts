@@ -8,6 +8,7 @@ import { init, serializeDbToDisk } from './utils/db2.js'
 import cron from 'node-cron'
 
 const timeoutTime = parseInt((process.env.TIMEOUT_TIME as string))
+let cycle = 0
 
 debug('HypeTrack started on %s.', new Date())
 // TODO: Web and Mesa.
@@ -31,6 +32,7 @@ process.on('SIGINT', async () => {
 
 // TODO: Have a way to have this dynamically expandable.
 setInterval(async () => {
+    debug('We\'re on check cycle %d.', cycle)
     await commonCheck('https://api.prod.hype.space', 'hypeapi')
     await commonCheck('https://ws.prod.hype.space', 'hypeapi-websocket')
     await commonCheck('https://telemetry.prod.hype.space', 'api-telemetry')
@@ -38,4 +40,7 @@ setInterval(async () => {
     await streamCheck('internet_high')
     await streamCheck('intranet_high')
     await streamCheck('wirecast_high')
+    
+    // Increment cycle
+    cycle++
 }, timeoutTime)

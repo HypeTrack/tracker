@@ -127,6 +127,9 @@ async function check(apiHost: string, friendlyHostname: string) {
             } else {
                 // We've hit a duplicate.
                 d('The localRev and remoteRev do not match, but they match something previously in the revisionHistory.')
+
+                await set(`lastRevision_${friendlyHostname}`, rev)
+
                 return
             }
         }
