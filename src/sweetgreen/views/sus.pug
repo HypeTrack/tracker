@@ -1,0 +1,71 @@
+extends _partials/header.pug
+block data
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" referrerpolicy="no-referrer")
+    link(rel="stylesheet", href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css")
+    script(src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer")
+    script.
+        /** global axios */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector("body > div.bg-gray-900 > div > nav > div.flex.items-end.self-center.space-x-2").remove()
+            const twtForm = document.querySelector('form#twitter-post')
+            const tgForm = document.querySelector('form#telegram-post')
+
+            twtForm.addEventListener('submit', async (e) => {
+                e.preventDefault()
+                const status = document.querySelector('textarea#status')
+                document.querySelector('input#twsubmit').setAttribute('disabled', true)
+
+                try {
+                    await axios.post('/api/twt', {
+                        status: status.value
+                    })
+                    toastr.success('Posted to Twitter.')
+                    status.value = ""
+                } catch (error) {
+                    toastr.error('Error occurred internally!')
+                }
+
+                document.querySelector('input#twsubmit').setAttribute('disabled', true)
+            })
+
+            tgForm.addEventListener('submit', async (e) => {
+                e.preventDefault()
+                const msg = document.querySelector('textarea#tg_status')
+                document.querySelector('input#tgsubmit').setAttribute('disabled', true)
+
+                try {
+                    await axios.post('/api/tg', {
+                        msg: msg.value
+                    })
+                    toastr.success('Posted to Telegram.')
+                    msg.value = ""
+                } catch (error) {
+                    toastr.error('Error occurred internally!')
+                }
+
+                document.querySelector('input#tgsubmit').setAttribute('disabled', false)
+            })
+        })
+block head
+    div(class="flex")
+        div(class="w-1/2")
+            h1(class="font-bold text-3xl") Post as HypeTrack
+            p(class="font-normal text-lg") Impersonate HypeTrack and post on the socials
+        aside(class="w-1/2 text-right self-center")
+            h2(class="font-bold text-sm text-gray-500") Module
+            p(class="font-mono text-xs text-gray-500") sweetgreen-sus
+block content
+    div(class="flex bg-yellow-400 text-black px-4 py-2 mb-4 rounded-md shadow-md")
+        span #[strong You're in #{process.env.NODE_ENV || 'production'} right now.] I hope you know what you're doing.
+    h3(class="text-xl font-bold") Twitter
+    form(action="/api/twt", method="POST", id="twitter-post", class="space-y-2")
+        label(for="status", class="text-md font-medium") Tweet Text
+        textarea(name="status", id="status", class="block border border-gray-400 w-full p-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400", maxlength="260")
+        input(type="submit", id="twsubmit" value="Submit", class="px-2 py-1 rounded-md bg-blue-600 text-white font-medium float-right")
+    div(class="clear-right")
+    h3(class="text-xl font-bold") Telegram
+    form(action="/api/tg", method="POST", id="telegram-post", class="space-y-2")
+        label(for="tg_status", class="text-md font-medium") Post Text
+        textarea(id="tg_status", name="msg", class="block border border-gray-400 w-full p-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400")
+        input(type="submit", id="tgsubmit", value="Submit", class="px-2 py-1 rounded-md bg-blue-600 text-white font-medium float-right")

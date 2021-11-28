@@ -1,0 +1,39 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet")
+        title HypeTrack Admin
+        script.
+            // embold active link
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('a').forEach(el => {
+                    if (el.href === location.href) el.classList.add('font-medium')
+                })
+            })
+        block data
+    body
+        .bg-gray-900
+            .container.mx-auto.max-w-6xl.px-4.py-2
+                nav.flex.space-x-4
+                  .flex.space-x-2.self-center
+                    img(src="/assets/scott.png" class="w-6 h-6 rounded-lg self-center")
+                    h1.font-bold.text-lg.text-white Sweetgreen
+                  .flex-1.self-center.space-x-4.text-white
+                    a.font-normal.text-md(href='/') Dashboard
+                    a.font-normal.text-md(href='/post-as') Post as HypeTrack
+                    //- TODO: These will probably eventually be a thing.
+                    //- a.font-normal.text-md(href='/streams') Streams
+                    //- a.font-normal.text-md(href='/db2') DB2
+                  .flex.items-end.self-center.space-x-2
+                    .relative.self-center
+                        .bg-yellow-400.w-2.h-2.rounded-full.self-center
+                        .bg-yellow-400.w-2.h-2.rounded-full.self-center.absolute.top-0
+                    p.font-bold.text-white.text-sm Connecting...
+
+        div(class="bg-gray-100 mb-4")
+            div(class="px-4 py-8 container mx-auto max-w-6xl")
+                block head
+        .px-4.py-2.container.mx-auto.max-w-6xl
+            block content
