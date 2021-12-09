@@ -15,7 +15,14 @@ Tracker also has the ability to send notifications when it detects changes. Curr
 
 ## Running Tracker
 
-Instructions coming soon™
+1. Install dependencies using your package manager of choice (I use `yarn`).
+1. Set your environment: set up Discord, Telegram, and Twitter keys (or turn them off in the check configuration.)
+1. Build HypeTrack by running the build script (for yarn, this would be `yarn build`)
+1. Run `start.sh` to start the bot.
+
+### Running in Production
+
+I literally just use `screen` lol
 
 ## License
 
