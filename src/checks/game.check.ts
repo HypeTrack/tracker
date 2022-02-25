@@ -20,7 +20,7 @@ const messages = {
     gameOver: `HQ is no longer active (ts: ${+new Date()})`
 }
 
-async function social(gameLive: boolean) {
+async function social (gameLive: boolean) {
     let text = gameLive ? messages.gameLive : messages.gameOver
 
     if (config.sendToDiscord) {
