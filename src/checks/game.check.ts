@@ -21,16 +21,18 @@ const messages = {
 }
 
 async function social(gameLive: boolean) {
+    let text = gameLive ? messages.gameLive : messages.gameOver
+
     if (config.sendToDiscord) {
-        await client.send(gameLive ? messages.gameLive : messages.gameOver)
+        await client.send(text)
     }
 
     if (config.sendToTwitter) {
-        await tweet(gameLive ? messages.gameLive : messages.gameOver)
+        await tweet(text)
     }
 
     if (config.sendToTelegram) {
-        await tg(gameLive ? messages.gameLive : messages.gameOver)
+        await tg(text)
     }
 }
 
