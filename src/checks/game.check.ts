@@ -7,10 +7,31 @@ import { get, set } from '../utils/db2.js'
 
 import type { HTCheckConfig } from '../types/HTCheckConfig.type.js'
 
+const key = 'gameLive'
+
 const config: HTCheckConfig = {
     sendToDiscord: true,
     sendToTelegram: true,
     sendToTwitter: true
+}
+
+const messages = {
+    gameLive: `An HQ game is active. (ts: ${+new Date()})`,
+    gameOver: `HQ is no longer active (ts: ${+new Date()})`
+}
+
+async function social(gameLive: boolean) {
+    if (config.sendToDiscord) {
+        await client.send(gameLive ? messages.gameLive : messages.gameOver)
+    }
+
+    if (config.sendToTwitter) {
+        await tweet(gameLive ? messages.gameLive : messages.gameOver)
+    }
+
+    if (config.sendToTelegram) {
+        await tg(gameLive ? messages.gameLive : messages.gameOver)
+    }
 }
 
 async function check () {
@@ -19,54 +40,40 @@ async function check () {
     try {
         d('Checking for live game...')
 
-        const gameAlreadyLive = await get<boolean>('gameLive')
-        
+        // Check DB2 for if the game is already live.
+        const gameAlreadyLive = await get<boolean>(key)
+
+        if (typeof gameAlreadyLive === 'undefined') {
+            // Set to false and return.
+            d(`${key} is not in DB2. Setting and leaving until next check.`)
+            await set<boolean>(key, false)
+            return
+        }
+
+        // Get JSON data from /shows/now.
         const { data } = await axios.get('https://api-quiz.hype.space/shows/now')
 
         if (data.active) {
+            // If the game is already live, we don't want to spam the notifiers
             if (gameAlreadyLive) {
                 d('Game already marked as live')
                 return
             }
 
-            // Check if we have the gameLive key
-            if (typeof gameAlreadyLive === 'undefined') {
-                d('gameLive not present in db2')
-                // save current state
-                await set<boolean>('gameLive', data.active)
-            }
+            d('Game live!')
 
-            if (config.sendToTwitter) {
-                await tweet(`An HQ game is now live. (ts: ${+new Date()})`)
-            }
-
-            if (config.sendToDiscord) {
-                await client.send(`An HQ game is now live. (ts: ${+new Date()})`)
-            }
-
-            if (config.sendToTelegram) {
-                await tg(`An HQ game is now live. (ts: ${+new Date()})`)
-            }
+            await social(data.active)
         } else {
             d('Game is not live.')
 
             if (gameAlreadyLive) {
-                await set<boolean>('gameLive', false)
-                
-                if (config.sendToTwitter) {
-                    await tweet(`The HQ game is over. (ts: ${+new Date()})`)
-                }
-    
-                if (config.sendToDiscord) {
-                    await client.send(`The HQ game is over. (ts: ${+new Date()})`)
-                }
-    
-                if (config.sendToTelegram) {
-                    await tg(`The HQ game is over. (ts: ${+new Date()})`)
-                }
+                await set<boolean>(key, false)
+                await social(data.active)
             }
         }
     } catch (error: any) {
-        d('Welp, that broke. %s', error.message)
+        d('Game check machine broke. %s', error.message)
     }
 }
+
+export default check
