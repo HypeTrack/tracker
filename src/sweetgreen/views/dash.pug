@@ -1,0 +1,105 @@
+extends _partials/header.pug
+block data
+    //- script(src="https://cdn.jsdelivr.net/npm/mesa-js-client@latest/dist/browser/client.js")
+    script.
+        // TODO: This entire thing needs to be rewritten... eugh
+        /** hydrated #{locals.ts} */
+        window.hypetrack = window.hypetrack || {};
+        hypetrack.dashdat = hypetrack.dashdat || {
+            ts: '#{locals.ts}',
+            "hypeapi": '#{locals.hypeapi}',
+            "hypeapi-websocket": '#{locals.hypeapi_ws}',
+            "api-telemetry": '#{locals.hypeapi_tm}',
+            //- "hypeapi-loadtest": '#{locals.hypeapi_lt}',
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {   
+            ['hypeapi', 'hypeapi-websocket', 'api-telemetry' /*, 'hypeapi-loadtest' */].forEach(el => {
+                const card = document.createElement('div')
+                card.classList.add('flex-row', 'bg-gray-100', 'shadow-lg', 'rounded-lg', 'space-y-2', 'p-4', 'border-2', 'border-gray-400')
+                card.dataset.apiName = el 
+
+                const apiName = document.createElement('h1')
+                apiName.classList.add('font-bold', 'text-md')
+                apiName.textContent = el
+
+                const rev = document.createElement('p')
+                rev.classList.add('font-mono', 'text-sm')
+                rev.textContent = hypetrack.dashdat[el]
+
+                card.insertAdjacentElement('beforeend', apiName)
+                card.insertAdjacentElement('beforeend', rev)
+
+                document.querySelector('[data-root]').append(card)
+            })
+
+            // Mesa specific thing, comment out when Mesa is ported in.
+            document.querySelector("body > div.bg-gray-900 > div > nav > div.flex.items-end.self-center.space-x-2").remove()
+        })
+
+        hypetrack.updateRevision = (name, revision) => {
+            const elm = document.querySelector(`div[data-api-name=${name}]`)
+
+            if (elm === null) {
+                // silently fail
+                console.warn('Mesa returned non-existant thing')
+                return
+            }
+
+            const revElm = document.querySelector(`div[data-api-name=${name}] > p`)
+
+            revElm.textContent = revision
+        }
+
+        hypetrack.updateTimestamp = ts => document.querySelector('span[data-last-update]').textContent = `last updated ${ts}`
+
+        /*
+        const client = new MesaClient('ws://localhost:4000')
+        client.onConnected = () => {
+            const statusText = document.querySelector('body > div.bg-gray-900 > div > nav > div.flex.items-end.self-center.space-x-2 > p')
+            const statusLed = document.querySelector('body > div.bg-gray-900 > div > nav > div.flex.items-end.self-center.space-x-2 > div > div.bg-yellow-400.w-2.h-2.rounded-full.self-center.absolute.top-0')
+            const statusLed2 = document.querySelector("body > div.bg-gray-900 > div > nav > div.flex.items-end.self-center.space-x-2 > div > div:nth-child(1)")
+            console.log('client connected, polling')
+
+            statusText.textContent = "Online, polling with Mesa"
+            statusLed.classList.remove('bg-yellow-400')
+            statusLed2.classList.remove('bg-yellow-400')
+            statusLed2.classList.add('bg-green-400')
+            statusLed.classList.add('bg-green-400', 'animate-ping')
+        }
+        
+        client.onError = e => {
+            const statusText = document.querySelector('body > div.bg-gray-900 > div > nav > div.flex.items-end.self-center.space-x-2 > p')
+            const statusLed = document.querySelector('body > div.bg-gray-900 > div > nav > div.flex.items-end.self-center.space-x-2 > div > div.bg-yellow-400.w-2.h-2.rounded-full.self-center.absolute.top-0')
+            const statusLed2 = document.querySelector("body > div.bg-gray-900 > div > nav > div.flex.items-end.self-center.space-x-2 > div > div:nth-child(1)")
+            console.log('error', e)
+
+            statusText.textContent = "Offline"
+            statusLed.classList.remove('bg-yellow-400')
+            statusLed.classList.add('bg-red-400')
+            statusLed2.classList.remove('bg-yellow-400')
+            statusLed2.classList.add('bg-red-400')
+        }
+
+        client.onMessage = ({ data, type }) => {
+            switch (type) {
+                case 'NEW_REVISION':
+                    hypetrack.updateRevision(data.name, data.revision)
+                    hypetrack.updateTimestamp(data.ts)
+                    break
+            }
+        }
+        */
+block head
+    .flex
+        div(class="w-1/2")
+            h1(class="font-bold text-3xl") Dashboard
+            p(class="font-normal text-lg") See how often (#[em never]) HQ updates their server
+        div(class="w-1/2 text-right self-center")
+            h3(class="font-bold text-sm text-gray-500") Module
+            p(class="font-mono text-xs text-gray-500") sweetgreen-dash-v2
+block content
+    div(class="grid grid-cols-3 grid-rows-1 gap-4" data-root)
+    span(class="float-right text-gray-400 text-sm mt-8" data-last-update) last updated #{locals.ts}
+
+        

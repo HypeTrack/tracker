@@ -12,7 +12,18 @@ const timeoutTime = parseInt((process.env.TIMEOUT_TIME as string))
 let cycle = 0
 
 debug('HypeTrack started on %s.', new Date())
-// TODO: Web and Mesa.
+// TODO: Mesa.
+if ((process.env.ENABLE_WEBMIN as string).toLowerCase() === 'true') {
+    const sweetgreenDebug = debug.extend('sweetgreen')
+    sweetgreenDebug('Importing Sweetgreen...')
+    const { default: sweetgreen } = await import('./sweetgreen/index.js')
+
+    const port = parseInt((process.env.WEBMIN_PORT as string))
+
+    sweetgreen.listen(port, () => {
+        sweetgreenDebug('Listening at %s.', `http://localhost:${port}`)
+    })
+}
 
 // Initialize DB2.
 await init()
