@@ -15,6 +15,29 @@ const config: HTCheckConfig = {
     sendToTwitter: true
 }
 
+const messages = {
+    streamLive: (playlist: string) => `The HQ stream is live @ https://hls.prod.hype.space/${playlist}.m3u8 (ts: ${Date.now()})`,
+    streamDown: (playlist: string) => `The HQ stream (${playlist}) is now down. (ts: ${Date.now()})`
+}
+
+async function socials (playlist: string, streamLive: boolean) {
+    const text = streamLive
+        ? messages.streamLive(playlist)
+        : messages.streamDown(playlist)
+
+    if (config.sendToDiscord) {
+        await postToDiscord(text)
+    }
+    
+    if (config.sendToTwitter) {
+        await tweet(text)
+    }
+    
+    if (config.sendToTelegram) {
+        await tg(text)
+    }
+}
+
 async function check(playlist: string) {
     const d = debug.extend(playlist)
 
@@ -35,17 +58,7 @@ async function check(playlist: string) {
         // Set streamLive for this playlist.
         await set<boolean>(`streamLive_${playlist}`, true)
 
-        if (config.sendToDiscord) {
-            await postToDiscord(`The HQ stream is live @ https://hls.prod.hype.space/${playlist}.m3u8 (ts: ${Date.now()})`)
-        }
-
-        if (config.sendToTelegram) {
-            await tg(`The HQ stream is live @ https://hls.prod.hype.space/${playlist}.m3u8 (ts: ${Date.now()})`)
-        }
-
-        if (config.sendToTwitter) {
-            await tweet(`The HQ stream is live @ https://hls.prod.hype.space/${playlist}.m3u8 (ts: ${Date.now()})`)
-        }
+        await socials(playlist, true)
     } catch (error: any) {
         d('%s is not live!', playlist)
 
@@ -55,17 +68,7 @@ async function check(playlist: string) {
             // The stream has gone offline since our last check.
             d('%s went offline since last check!', playlist)
 
-            if (config.sendToDiscord) {
-                await postToDiscord(`The HQ stream (${playlist}) is now down. (ts: ${Date.now()})`)
-            }
-
-            if (config.sendToTelegram) {
-                await tg(`The HQ stream (${playlist}) is now down. (ts: ${Date.now()})`)
-            }
-
-            if (config.sendToTwitter) {
-                await tweet(`The HQ stream (${playlist}) is now down. (ts: ${Date.now()})`)
-            }
+            await socials(playlist, false)
         }
 
         return
