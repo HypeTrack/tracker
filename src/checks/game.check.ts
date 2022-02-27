@@ -62,18 +62,22 @@ async function check () {
                 return
             }
 
+            // If we're here, the game is live and the key for the game already being live is false
             d('Game live!')
 
+            // Post on social media
             await social(data.active)
         } else {
             d('Game is not live.')
-
+            
+            // If gameAlreadyLive is true, set key to false and post on social media
             if (gameAlreadyLive) {
                 await set<boolean>(key, false)
                 await social(data.active)
             }
         }
     } catch (error: any) {
+        // oops
         d('Game check machine broke. %s', error.message)
     }
 }
