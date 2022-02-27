@@ -47,7 +47,7 @@ async function check () {
 
         if (typeof gameAlreadyLive === 'undefined') {
             // Set to false and return.
-            d(`${key} is not in DB2. Setting and leaving until next check.`)
+            d(`${key} is not in DB2. Setting to false and leaving until next check.`)
             await set<boolean>(key, false)
             return
         }
