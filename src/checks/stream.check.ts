@@ -1,5 +1,8 @@
-import dotenv from 'dotenv'
-dotenv.config()
+// TODO: Why is this here?
+// IIRC this was because of some weirdness with the Twitter utils script not finding its keys.
+// But game/common works without this.
+// import dotenv from 'dotenv'
+// dotenv.config()
 
 import axios from 'axios'
 import debug from '../utils/debug.js'
