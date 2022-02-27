@@ -6,7 +6,7 @@ const client = new Telegram(
 )
 
 async function tg(message: string): Promise<Message> {
-    return await client.sendMessage(
+    return client.sendMessage(
         (process.env.TG_CHAT_ID as string),
         message
     )

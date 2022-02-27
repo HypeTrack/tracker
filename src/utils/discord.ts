@@ -11,7 +11,7 @@ const client = new WebhookClient({
 })
 
 async function postToDiscord(message: string): Promise<APIMessage> {
-    return await client.send(message)
+    return client.send(message)
 }
 
 export {
