@@ -127,6 +127,11 @@ async function check (anyParametersNeeded: any): void {
 }
 ```
 
+A couple things you should do in your checks:
+* **Extend out the debug scope and assign it to a constant called `d`.**
+    * `const d = debug.extend("check")`
+* Wrap your code in a try-catch block so you can handle errors.
+
 ### Checking if a key exists in DB2
 
 Most tracker checks use this pattern to check if a key exists in DB2:
