@@ -12,6 +12,8 @@ import { tg } from '../utils/telegram.js'
 import { get, set } from '../utils/db2.js'
 import type { HTCheckConfig } from '../types/HTCheckConfig.type.js'
 
+const key = (playlist: string) => `streamLive_${playlist}`
+
 const config: HTCheckConfig = {
     sendToDiscord: true,
     sendToTelegram: true,
@@ -43,9 +45,10 @@ async function socials (playlist: string, streamLive: boolean) {
 
 async function check(playlist: string) {
     const d = debug.extend(playlist)
+    const db2Key = key(playlist)
 
     // Get the already existing streamLive entry in our in-memory database.
-    const streamLive = await get<boolean>(`streamLive_${playlist}`)
+    const streamLive = await get<boolean>(db2Key)
 
     try {
         d('Attempting request to %s.m3u8...', playlist)
@@ -59,13 +62,13 @@ async function check(playlist: string) {
         }
 
         // Set streamLive for this playlist.
-        await set<boolean>(`streamLive_${playlist}`, true)
+        await set<boolean>(db2Key, true)
 
         await socials(playlist, true)
     } catch (error: any) {
         d('%s is not live!', playlist)
 
-        await set<boolean>(`streamLive_${playlist}`, false)
+        await set<boolean>(db2Key, false)
 
         if (streamLive === true) {
             // The stream has gone offline since our last check.
