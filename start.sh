@@ -7,4 +7,6 @@ if [ ! -d "$BUILD_DIR/" ]; then
   exit 1
 fi
 
+# Alternatively, you can remove the -db2 from this argument list.
+# The only reason it is here is because DB2 is especially noisy.
 DEBUG=*,-follow-redirects,-telegraf:client,-db2 node dist/index

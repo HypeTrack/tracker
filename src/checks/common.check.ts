@@ -3,8 +3,8 @@ import debug from '../utils/debug.js'
 import { tweet } from '../utils/twitter.js'
 import { client } from '../utils/discord.js'
 import { tg } from '../utils/telegram.js'
-// import { Message } from '@cryb/mesa'
 import { get, set } from '../utils/db2.js'
+
 import type { HTCheckConfig } from '../types/HTCheckConfig.type.js'
 import type { HTHost } from '../types/HTHost.type.js'
 import type { HTRevisionHistory } from '../types/HTRevisionHistory.type.js'
@@ -13,6 +13,52 @@ const config: HTCheckConfig = {
     sendToDiscord: true,
     sendToTelegram: true,
     sendToTwitter: true
+}
+
+const messages = {
+    // Discord specific
+    discordEmbedContent: 'Hear ye hear ye, new API',
+    discordEmbedTitle: (hostname: string) => `${hostname} Hash Changed`,
+    discordEmbedBody: (hostname: string) => `\`${hostname}\`'s hash has changed!`,
+    discordOldRevision: 'Old Hash',
+    discordNewRevision: 'New Hash',
+
+    // Twitter / Telegram stuff
+    revisionChanged: (hostname: string, oldRevision: string, newRevision: string) => `${hostname}'s hash has changed!\n\n${oldRevision} => ${newRevision}`
+}
+
+async function socials (hostname: string, oldRevision: string, newRevision: string) {
+    if (config.sendToDiscord) {
+        await client.send({
+            content: messages.discordEmbedContent,
+            embeds: [{
+                title: messages.discordEmbedTitle(hostname),
+                description: messages.discordEmbedBody(hostname),
+                color: 'RANDOM',
+                fields: [
+                    {
+                        name: messages.discordOldRevision,
+                        value: `\`${oldRevision}\``,
+                        inline: true
+                    },
+                    {
+                        name: messages.discordNewRevision,
+                        value: `\`${newRevision}\``,
+                        inline: true
+                    }
+                ],
+                timestamp: new Date()
+            }]
+        })
+    }
+
+    if (config.sendToTelegram) {
+        await tg(messages.revisionChanged(hostname, oldRevision, newRevision))
+    }
+
+    if (config.sendToTwitter) {
+        await tweet(messages.revisionChanged(hostname, oldRevision, newRevision))
+    }
 }
 
 /**
@@ -77,37 +123,7 @@ async function check(apiHost: string, friendlyHostname: string) {
                 // If we get an undefined value here, there is nothing in the revision history and we've probably hit a new hash.
                 d('The localRev and remoteRev do not match, and there is no match in the revisionHistory.')
 
-                if (config.sendToDiscord) {
-                    await client.send({
-                        content: 'Hear ye hear ye, new API',
-                        embeds: [{
-                            title: `${friendlyHostname} Changed`,
-                            description: `\`${friendlyHostname}\`'s revision has changed! This could indicate a scale-up or new API changes.`,
-                            color: 'RANDOM',
-                            fields: [
-                                {
-                                    name: 'Old Revision',
-                                    value: `\`${localRev}\``,
-                                    inline: true
-                                },
-                                {
-                                    name: 'New Revision',
-                                    value: `\`${rev}\``,
-                                    inline: true
-                                }
-                            ],
-                            timestamp: new Date()
-                        }]
-                    })
-                }
-
-                if (config.sendToTelegram) {
-                    await tg(`${friendlyHostname}'s revision has changed! This could indicate a scale-up or new API changes.\n\nOld Revision: ${localRev}\nNew Revision: ${rev}\nDate: ${new Date()}`)
-                }
-
-                if (config.sendToTwitter) {
-                    await tweet(`🛠️ I've detected that ${friendlyHostname}'s revision has changed. This could indicate an API change or a scale-up.\n\nOld revision: ${localRev}\nNew revision: ${rev}`)
-                }
+                await socials(friendlyHostname, localRev, rev)
 
                 // To ensure we don't send out duplicates, create a new HTRevisionHistory object and append it to the revHistory.
                 // Then we write this back.
@@ -116,7 +132,7 @@ async function check(apiHost: string, friendlyHostname: string) {
                     rev
                 }
 
-                // See note at L77-78 for the reason the non-null assertion operator is used here.
+                // See note at L118-119 for the reason the non-null assertion operator is used here.
                 revHistory!.push(newHistoryEntry)
                 await set('revisionHistory', revHistory)
 

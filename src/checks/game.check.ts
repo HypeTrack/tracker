@@ -1,7 +1,7 @@
 import axios from 'axios'
 import debug from '../utils/debug.js'
 import { tweet } from '../utils/twitter.js'
-import { client } from '../utils/discord.js'
+import { postToDiscord } from '../utils/discord.js'
 import { tg } from '../utils/telegram.js'
 import { get, set } from '../utils/db2.js'
 
@@ -16,15 +16,15 @@ const config: HTCheckConfig = {
 }
 
 const messages = {
-    gameLive: `An HQ game is active. (ts: ${+new Date()})`,
-    gameOver: `HQ is no longer active. (ts: ${+new Date()})`
+    gameLive: () => `An HQ game is active. (ts: ${+new Date()})`,
+    gameOver: () => `HQ is no longer active. (ts: ${+new Date()})`
 }
 
 async function social (gameLive: boolean) {
-    let text = gameLive ? messages.gameLive : messages.gameOver
+    let text = gameLive ? messages.gameLive() : messages.gameOver()
 
     if (config.sendToDiscord) {
-        await client.send(text)
+        await postToDiscord(text)
     }
 
     if (config.sendToTwitter) {
