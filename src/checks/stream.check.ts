@@ -15,6 +15,8 @@ const config: HTCheckConfig = {
     sendToTwitter: true
 }
 
+const HLS_URL = 'https://hls-origin.prod.hype.space'
+
 async function check(playlist: string) {
     const d = debug.extend(playlist)
 
@@ -23,7 +25,7 @@ async function check(playlist: string) {
 
     try {
         d('Attempting request to %s.m3u8...', playlist)
-        await axios.get(`https://hls.prod.hype.space/${playlist}.m3u8`)
+        await axios.get(`${HLS_URL}/${playlist}.m3u8`)
 
         // If we get here, the stream is live.
         if (streamLive === true) {
@@ -36,15 +38,15 @@ async function check(playlist: string) {
         await set<boolean>(`streamLive_${playlist}`, true)
 
         if (config.sendToDiscord) {
-            await postToDiscord(`The HQ stream is live @ https://hls.prod.hype.space/${playlist}.m3u8 (ts: ${Date.now()})`)
+            await postToDiscord(`The HQ stream is live @ ${HLS_URL}/${playlist}.m3u8 (ts: ${Date.now()})`)
         }
 
         if (config.sendToTelegram) {
-            await tg(`The HQ stream is live @ https://hls.prod.hype.space/${playlist}.m3u8 (ts: ${Date.now()})`)
+            await tg(`The HQ stream is live @ ${HLS_URL}/${playlist}.m3u8 (ts: ${Date.now()})`)
         }
 
         if (config.sendToTwitter) {
-            await tweet(`The HQ stream is live @ https://hls.prod.hype.space/${playlist}.m3u8 (ts: ${Date.now()})`)
+            await tweet(`The HQ stream is live @ ${HLS_URL}/${playlist}.m3u8 (ts: ${Date.now()})`)
         }
     } catch (error: any) {
         d('%s is not live!', playlist)
