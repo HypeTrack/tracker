@@ -1,0 +1,49 @@
+{
+    "__v": 1,
+    "config": {
+        "db2": {
+            "serializeOnBoot": true,
+            "serializeCronString": "*/5 * * * *"
+        },
+        "timeoutMs": 5000,
+        "checks": [
+            {
+                "type": "common",
+                "params": [
+                    "api.prod.hype.space",
+                    "hypeapi"
+                ]
+            },
+            {
+                "type": "common",
+                "params": [
+                    "ws.prod.hype.space",
+                    "hypeapi-websocket"
+                ]
+            },
+            {
+                "type": "common",
+                "params": [
+                    "telemetry.prod.hype.space",
+                    "api-telemetry"
+                ]
+            },
+            {
+                "type": "stream",
+                "params": ["internet_high"]
+            },
+            {
+                "type": "stream",
+                "params": ["intranet_high"]
+            },
+            {
+                "type": "stream",
+                "params": ["wirecast_high"]
+            },
+            {
+                "type": "game",
+                "params": []
+            }
+        ]
+    }
+}
