@@ -43,7 +43,7 @@ setInterval(async () => {
     await streamCheck('intranet_high')
     await streamCheck('wirecast_high')
 
-    await gameCheck()
+    typeof process.env.HQ_TOKEN !== 'undefined' && await gameCheck()
     
     // Increment cycle
     debug('Cycle %d ended.', cycle)

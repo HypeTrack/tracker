@@ -53,9 +53,18 @@ async function check () {
         }
 
         // Get JSON data from /shows/now.
-        const { data } = await axios.get('https://api-quiz.hype.space/shows/now')
+        const { data } = await axios.get('https://api-quiz.hype.space/shows/schedule', {
+            headers: {
+                'Authorization': `Bearer ${process.env.HQ_TOKEN}`
+            }
+        })
 
-        if (data.active) {
+        // Go through all shows under the 'show' key.
+        // Then, look through and see if there is a 'live' property.
+        // If there is, and the length is greater than 0, then the game is live.
+        const live = data.shows.filter((show: any) => show.live.length > 0)
+
+        if (live.length > 0) {
             // If the game is already live, we don't want to spam the notifiers
             if (gameAlreadyLive) {
                 d('Game already marked as live')
@@ -65,15 +74,18 @@ async function check () {
             // If we're here, the game is live and the key for the game already being live is false
             d('Game live!')
 
+            // Set the key to true
+            await set<boolean>(key, true)
+
             // Post on social media
-            await social(data.active)
+            await social(true)
         } else {
             d('Game is not live.')
-            
+
             // If gameAlreadyLive is true, set key to false and post on social media
             if (gameAlreadyLive) {
                 await set<boolean>(key, false)
-                await social(data.active)
+                await social(false)
             }
         }
     } catch (error: any) {
