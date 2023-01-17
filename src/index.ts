@@ -4,6 +4,7 @@ dotenv.config()
 import debug from './utils/debug.js'
 import commonCheck from './checks/common.check.js'
 import streamCheck from './checks/stream.check.js'
+import gameCheck from './checks/game.check.js'
 import { init, serializeDbToDisk } from './utils/db2.js'
 import cron from 'node-cron'
 
@@ -31,6 +32,7 @@ process.on('SIGINT', async () => {
 })
 
 // TODO: Have a way to have this dynamically expandable.
+// TODO: Figure out what needs priority here.
 setInterval(async () => {
     debug('We\'re on check cycle %d.', cycle)
     await commonCheck('https://api.prod.hype.space', 'hypeapi')
@@ -40,6 +42,8 @@ setInterval(async () => {
     await streamCheck('internet_high')
     await streamCheck('intranet_high')
     await streamCheck('wirecast_high')
+
+    typeof process.env.HQ_TOKEN !== 'undefined' && await gameCheck()
     
     // Increment cycle
     debug('Cycle %d ended.', cycle)

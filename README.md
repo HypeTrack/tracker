@@ -7,6 +7,7 @@ Tracker is the main codebase for [@HQMonitor](//twitter.com/HQMonitor) (also kno
 Tracker can:
 * Determine when the server is being re-deployed or scaled up
 * Determine when an HQ stream has gone live
+* Determine when a game is live
 
 Tracker also has the ability to send notifications when it detects changes. Currently, it can notify via the following:
 * Discord webhook (set `DISCORD_WEBHOOK_ID` and `DISCORD_WEBHOOK_SECRET` in your `.env`)

@@ -14,7 +14,7 @@ const client = new Twitter({
 async function tweet(content: string): Promise<void> {
     if (content.length > 280) throw new Error('Status is longer than 280 characters.')
 
-    return await client.post('statuses/update', {
+    return client.post('statuses/update', {
         status: content
     })
 }
