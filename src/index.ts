@@ -50,7 +50,6 @@ const gameChecks = config.checks.filter(check => check.type === 'game')
 let checkCount = 0;
 [commonChecks, streamChecks, gameChecks].forEach(checks => checkCount += checks.length)
 debug('Starting %d checks.', checkCount)
-
 setInterval(async () => {
     debug('We\'re on check cycle %d.', cycle)
 
