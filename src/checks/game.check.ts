@@ -16,8 +16,8 @@ const config: HTCheckConfig = {
 }
 
 const messages = {
-    gameLive: `An HQ game is active. (ts: ${+new Date()})`,
-    gameOver: `HQ is no longer active. (ts: ${+new Date()})`
+    gameLive: `An HQ game is now active. (ts: ${+new Date()})`,
+    gameOver: `The HQ game is no longer active. (ts: ${+new Date()})`
 }
 
 async function social (gameLive: boolean) {
