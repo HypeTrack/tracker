@@ -12,7 +12,7 @@ import type { HTRevisionHistory } from '../types/HTRevisionHistory.type.js'
 const config: HTCheckConfig = {
     sendToDiscord: true,
     sendToTelegram: true,
-    sendToTwitter: true
+    sendToTwitter: false
 }
 
 /**

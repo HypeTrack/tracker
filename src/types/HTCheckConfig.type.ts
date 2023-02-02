@@ -2,5 +2,5 @@
 export type HTCheckConfig = {
     sendToTelegram: boolean,
     sendToDiscord: boolean,
-    sendToTwitter: boolean
+    sendToTwitter?: boolean
 }

@@ -12,7 +12,7 @@ import type { HTCheckConfig } from '../types/HTCheckConfig.type.js'
 const config: HTCheckConfig = {
     sendToDiscord: true,
     sendToTelegram: true,
-    sendToTwitter: true
+    sendToTwitter: false
 }
 
 const HLS_URL = 'https://hls-origin.prod.hype.space'

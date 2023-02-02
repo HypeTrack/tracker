@@ -12,7 +12,6 @@ Tracker can:
 Tracker also has the ability to send notifications when it detects changes. Currently, it can notify via the following:
 * Discord webhook (set `DISCORD_WEBHOOK_ID` and `DISCORD_WEBHOOK_SECRET` in your `.env`)
 * Telegram chat (set `TG_TOKEN` and `TG_CHAT_ID`)
-* Twitter (set `TW_CONSUMER_KEY`, `TW_CONSUMER_SECRET`, `TW_ACCESS_KEY`, and `TW_ACCESS_SECRET`)
 
 ## Running Tracker
 
