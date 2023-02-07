@@ -12,7 +12,7 @@ const key = 'gameLive'
 const config: HTCheckConfig = {
     sendToDiscord: true,
     sendToTelegram: true,
-    sendToTwitter: true
+    sendToTwitter: false
 }
 
 const messages = {
